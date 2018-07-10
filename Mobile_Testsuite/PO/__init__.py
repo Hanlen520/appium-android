@@ -1,0 +1,2 @@
+def RecoordPage():
+	return None

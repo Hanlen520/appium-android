@@ -490,6 +490,7 @@ class _TestResult(TestResult):
 
     def __init__(self, verbosity=1):
         TestResult.__init__(self)
+        super().__init__(verbosity)
         self.outputBuffer = StringIO()
         self.stdout0 = None
         self.stderr0 = None

@@ -1,61 +1,59 @@
-from Mobile_Testsuite.untils.log import LOG
-from Mobile_Testsuite.testcase.common import *
+#######################################################
+# FileName:test_login.py
+# Author:wangxiaoxiao
+# Date:2018-7-6
+# Function Description: Login页面
+#######################################################
 import unittest
-import time
+from Mobile_Testsuite.PO import InitDriver
+from Mobile_Testsuite.PO import HomePage
+from Mobile_Testsuite.PO import LoginPage
+from Mobile_Testsuite.Untils.server import Server
 
 
-class LoginTestCase(unittest.TestCase, Common):
+
+class LoginCase(unittest.TestCase):
+    """Login 测试用例 """
+
+    @classmethod
+    def setUpClass(cls):
+        server = Server()
+        server.main()
+
     def setUp(self):
-        print("------------------setUp Test-----------------------")
-        Common.__init__(self)
-        Common.setup(self)
+        self.driver = InitDriver.start_driver()
+        self.HomePage = HomePage.HomePage(self.driver)
+        self.driver.get('http://192.168.8.21:8989/home?c=ndydoe')
+        self.HomePage.click_register_btn()
+        self.LoginPage = LoginPage.LoginPage(self.driver)
 
     def tearDown(self):
-        print("------------------tearDown Test-----------------------")
-        Common.quit(self)
+        self.driver.quit()
 
-    # 登录页面UI检查
-    def test_ui(self):
-        LOG.info("登录页面UI验证")
-        self.driver.get('http://192.168.8.21:8989/home?c=ndydoe')
-        self.driver.find_element_by_xpath('//*[@id="loginRegister"]/a/span[2]').click()
-        # 登录页面标题部分检查，应该不可见
-        self.assertFalse((self.driver.find_element_by_xpath('//*[@id="header"]/header').is_displayed()))
-        # 登录页面logo检查
-        logo = self.driver.find_element_by_xpath('/html/body/div/div[4]/div/div[1]')
-        self.assertTrue(logo.is_displayed())
-        # 登录页面账号图标检查
-        account_picture = self.driver.find_element_by_xpath('//*[@id="form_login"]/div[1]/label')
-        self.assertTrue(account_picture.is_displayed())
-        # 登录页面密码图标检查
-        password_picture = self.driver.find_element_by_xpath('//*[@id="form_login"]/div[2]/label')
-        self.assertTrue(password_picture.is_displayed())
-        # 登录页面登录按钮状态检查，默认禁用
-        self.assertFalse(self.driver.find_element_by_xpath('//*[@id="form_login"]/button').is_enabled())
-        # 登录页面“忘记密码”文本检查
-        self.assertTrue((self.driver.find_element_by_link_text("忘记密码").is_displayed()))
-        # 登录页面“新用户注册”文本检查
-        self.assertTrue((self.driver.find_element_by_link_text("新用户注册").is_displayed()))
-        LOG.info("登录页面UI正确")
+    # 验证忘记密码链接跳转
+    def test_001_forgot_link(self):
+        """测试点：点击忘记密码跳转是否成功"""
+        print("test_001_forgot_link")
+        self.LoginPage.click_forgot_link()
+        self.assertEqual("http://192.168.8.21:8989/fotgotpassword", self.driver.current_url)
 
-    # 输入正确账号和密码，登录成功验证
-    def test_login_success(self):
-        LOG.info("正确信息，登录成功验证")
-        self.driver.get(self.baseurl)
-        self.driver.find_element_by_xpath('//*[@id="loginRegister"]/a/span[2]').click()
-        # 确认跳转至登录页面
-        self.assertEqual('http://192.168.8.21:8989/login', self.driver.current_url)
-        # 输入账号
-        self.driver.find_element_by_xpath('//*[@id="form_login"]/div[1]/input').send_keys(self.username)
-        # 输入密码
-        self.driver.find_element_by_xpath('//*[@id="form_login"]/div[2]/input').send_keys(self.password)
-        # 点击提交
-        self.driver.find_element_by_xpath('//*[@id="form_login"]/button').click()	   
-        time.sleep(2)
-        self.assertTrue(self.driver.find_element_by_xpath('//*[@id="loginRegister"]/a/span[2]').is_displayed())
-        LOG.info("正确账号密码，登录成功")
+    # 验证新用户注册链接跳转
+    def test_002_register_link(self):
+        """测试点：点击新用户注册跳转是否成功"""
+        print("test_002_register_link")
+        self.LoginPage.click_register_link()
+        self.assertEqual("http://192.168.8.21:8989/newusers", self.driver.current_url)
+
+    # 正确账号密码，验证登录
+    def test_003_login_correct(self):
+        """测试点：输入正确账号密码，点击登录是否登录成功"""
+        print("test_003_login_correct")
+        self.LoginPage.send_username("xiaoxiao")
+        self.LoginPage.send_password("qqq111")
+        # self.driver.press_keycode('4')
+        self.LoginPage.click_login_btn()
+        self.assertEqual('首页', self.HomePage.get_title_text())
 
 
 if __name__ == '__main__':
     unittest.main()
-

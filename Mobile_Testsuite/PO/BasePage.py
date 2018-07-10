@@ -142,7 +142,7 @@ class Element(object):
 
     # 截图，并保存于指定目录
     def get_screenshot(self):
-        dir_path = os.path.dirname(os.getcwd()) + "\\testreport\\screenShot"
+        dir_path = os.path.dirname(os.getcwd()) + "\\Testreport\\screenShot"
         if not os.path.isdir(dir_path):
             os.makedirs(dir_path)
         pic_name = 'screenshot_' + time.strftime('%Y%m%d%H%M%S') + '.png'

@@ -1,72 +1,58 @@
-from Mobile_Testsuite.testcase.common import Common
-from Mobile_Testsuite.untils.log import LOG
+#######################################################
+# FileName:test_register.py
+# Author:wangxiaoxiao
+# Date:2018-7-6
+# Function Description: Register页面
+#######################################################
 import unittest
-import time
+from Mobile_Testsuite.PO import InitDriver
+from Mobile_Testsuite.PO import HomePage
+from Mobile_Testsuite.PO import LoginPage
+from Mobile_Testsuite.PO import RegPage
+from Mobile_Testsuite.Untils.server import Server
 import random
-import string
 
-#获取账号、密码、邮箱的输入内容
-# username = globalvar.get_username()
-# password = globalvar.get_password()
-# email = globalvar.get_email()
+registerName = "test" + random.randint(0, 9) + random.randint(0, 9) + random.randint(0, 9)
+registerEmail = str(registerName) + "@sina.cn"
 
 
-#组合数字与小写字母的序列
-s = string.digits + string.ascii_lowercase
-#随机取出6个字母和数字的组合合并成字符串
-random_data = ''.join(random.sample(s, 6))
+class RegisterCase(unittest.TestCase):
+    """Register 测试用例 """
 
+    @classmethod
+    def setUpClass(cls):
+        server = Server()
+        server.main()
 
-class RegisterTestCase(unittest.TestCase, Common):
     def setUp(self):
-        print("------------------setUp Test-----------------------")
-        Common.__init__(self)
-        Common.setup(self)
+        self.driver = InitDriver.start_driver()
+        self.HomePage = HomePage.HomePage(self.driver)
+        self.driver.get('http://192.168.8.21:8989/home?c=ndydoe')
+        self.HomePage.click_register_btn()
+        self.LoginPage = LoginPage.LoginPage(self.driver)
+        self.LoginPage.click_register_link()
+        self.RegisterPage = RegPage.RegPage(self.driver)
 
     def tearDown(self):
-        print("------------------tearDown Test-----------------------")
-        Common.quit(self)
+        self.driver.quit()
 
-    # 注册页面UI检查
-    def test_register_ui(self):
-        LOG.info("注册页面UI验证")
-        self.driver.get(self.baseurl)
-        self.driver.find_element_by_xpath('//*[@id="loginRegister"]/a/span[2]').click()
-        self.driver.find_element_by_link_text("新用户注册").click()
-        # 注册页面标题部分检查，应该不可见
-        self.assertFalse((self.driver.find_element_by_xpath('//*[@id="header"]/header').is_displayed()))
-        # 注册页面logo检查
-        logo = self.driver.find_element_by_xpath('/html/body/div/div[4]/div/div[1]')
-        self.assertTrue(logo.is_displayed())
-        # 注册页面账号图标检查
-        account_picture = self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[1]/label')
-        self.assertTrue(account_picture.is_displayed())
-        # 注册页面密码图标检查
-        password_picture = self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[2]/label')
-        self.assertTrue(password_picture.is_displayed())
-        # 注册页面邮箱图标检查
-        mail_picture = self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[2]/label')
-        self.assertTrue(mail_picture.is_displayed())
-        # 注册页面服务条款勾选框检查
-        self.assertTrue(self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[4]/label/span[1]').is_displayed())
-        # 注册页面服务条款勾选框状态检查，默认勾选
-        checkbox = self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[4]/label/span[1]/input')
-        self.assertTrue(checkbox.is_selected())
-        # 注册页面服务条款文本信息检查s
-        rule = self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[4]/label/span[2]')
-        self.assertEqual('我接受《服务条款》', rule.text)
-        # 注册页面进入游戏按钮状态检查，默认禁用
-        self.assertFalse(self.driver.find_element_by_xpath('//*[@id="newusers-form"]/button').is_enabled())
-        LOG.info("注册页面UI正确")
+    # 验证服务条款弹窗
+    def test_001_service_window(self):
+        """测试点：点击服务条款，弹出弹窗"""
+        print("test_001_service_window")
+        self.RegisterPage.click_service_btn()
+        self.assertTrue(self.RegisterPage.service_window_is_display())
 
-    # 输入正确账号，密码和邮箱，注册成功验证
-    def test_register_success(self):
-        LOG.info("正确信息，注册成功验证")
-        Common.register(self)
-        time.sleep(3)
-        result = self.driver.find_element_by_xpath('//*[@id="loginRegister"]/div/div/span[2]/span')
-        self.assertEqual('0.00000000', result.text)
-        LOG.info("正确账号，密码，邮箱，注册成功")
+    # 验证正确注册信息提交
+    def test_002_register_correct(self):
+        """测试点：正确用户名，密码，邮箱，是否提交成功"""
+        print("test_002_register_correct")
+        self.RegisterPage.send_username(registerName)
+        self.RegisterPage.send_password("qqq111")
+        self.RegisterPage.send_email(registerEmail)
+        self.RegisterPage.click_register_btn()
+        self.assertEqual('首页', self.HomePage.get_title_text())
+
 
 
 if __name__ == '__main__':

@@ -27,7 +27,7 @@ class LoginPage(Element):
     password_input_loc = (By.XPATH, '//*[@id="login-password"]')
 
     # 登录按钮
-    login_btn_loc = (By.XPATH, '//*[@id="form_login"]/button')
+    confirm_btn_loc = (By.XPATH, '//*[@id="form_login"]/button')
 
     # 忘记密码页面链接
     forgot_link_loc = (By.LINK_TEXT, '忘记密码')
@@ -41,8 +41,8 @@ class LoginPage(Element):
     # 操作方法
 
     # 点击登录按钮
-    def click_login_btn(self):
-        self.click(self.login_btn_loc)
+    def click_confirm_btn(self):
+        self.click(self.confirm_btn_loc)
 
     # 点击忘记密码
     def click_forgot_link(self):
@@ -62,15 +62,17 @@ class LoginPage(Element):
 
     # 登录页面元素是否显示
     def login_element_is_display(self):
-        self.is_display(self.logo_loc)
-        self.is_display(self.username_icon_loc)
-        self.is_display(self.username_input_loc)
-        self.is_display(self.password_icon_loc)
-        self.is_display(self.password_input_loc)
-        self.is_display(self.login_btn_loc)
-        self.is_display(self.forgot_link_loc)
-        self.is_display(self.register_link_loc)
-        self.is_display(self.bottom_loc)
+        login_element = {self.logo_loc,
+                         self.username_icon_loc,
+                         self.username_input_loc,
+                         self.password_icon_loc,
+                         self.password_input_loc,
+                         self.confirm_btn_loc,
+                         self.forgot_link_loc,
+                         self.register_link_loc,
+                         self.bottom_loc}
+        for element in login_element:
+            self.is_display(element)
 
     # 获取用户名输入框默认文本
     def get_username_text(self):
@@ -84,5 +86,11 @@ class LoginPage(Element):
 
     # 判断登录按钮是否禁用
     def login_btn_is_enable(self):
-        true_or_false = self.find_element(*self.login_btn_loc).is_enabled()
+        true_or_false = self.find_element(*self.confirm_btn_loc).is_enabled()
         return true_or_false
+
+    # 登录测试账号
+    def login_test_account(self):
+        self.send_username('test001')
+        self.send_password('123456')
+        self.click_confirm_btn()

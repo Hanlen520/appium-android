@@ -51,6 +51,9 @@ class RegPage(Element):
     # 试玩币说明文本信息
     information_text_loc = (By.XPATH, '//*[@id="newusers-form"]/div[6]/div[2]/span')
 
+    # 服务条款弹窗
+    service_window_loc = (By.XPATH, '//*[@id="repeat_login"]')
+
     # 底栏
     bottom_loc = (By.ID, 'footer')
 
@@ -132,3 +135,12 @@ class RegPage(Element):
     def service_btn_is_selected(self):
         true_or_false = self.find_element(*self.service_check_loc).is_selected()
         return true_or_false
+
+    # 判断服务条款弹窗是否出现
+    def service_window_is_display(self):
+        style_value = self.find_element(*self.service_window_loc).get_attribute('style')
+        if style_value == "display: block;":
+            return True
+        else:
+            return False
+

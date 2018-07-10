@@ -5,31 +5,27 @@
 # Function Description: 封装testcase中的一些公共方法
 #######################################################
 from appium import webdriver
-from Mobile_Testsuite.config.config import make_dis
 import random
 import string
+from Mobile_Testsuite.PO.HomePage import HomePage
+from Mobile_Testsuite.PO.LoginPage import LoginPage
 
 
 class Common(object):
-    def __init__(self):
-        self.username = 'test001'
-        self.password = '123456'
-        self.baseurl = 'http://192.168.8.21:8989/home?c=ndydoe'
-        self.dis_browser = make_dis()
-        self.driver = webdriver.Remote('http://localhost:4723/wd/hub', self.dis_browser)
-
-    def setup(self):
-        return self.driver
-
-    def quit(self):
-        self.driver.quit()
+    def __init__(self, driver):
+        self.driver = driver
+        self.HomePage = HomePage(self.driver)
+        self.LoginPage = LoginPage(self.driver)
+        self.baseurl = 'http://192.168.8.21:8989/home'
 
     def login(self):
         self.driver.get(self.baseurl)
-        self.driver.find_element_by_xpath('//*[@id="loginRegister"]/a/span[2]').click()
-        self.driver.find_element_by_xpath('//*[@id="form_login"]/div[1]/input').send_keys(self.username)
-        self.driver.find_element_by_xpath('//*[@id="form_login"]/div[2]/input').send_keys(self.password)
-        self.driver.find_element_by_xpath('//*[@id="form_login"]/button').click()
+        self.HomePage.click_register_btn()
+        self.LoginPage.login_test_account()
+
+    def enter_account_page(self):
+        self.login()
+        self.HomePage.click_account_btn()
 
     def register(self):
         # 组合数字与小写字母的序列
@@ -49,3 +45,4 @@ class Common(object):
         # self.driver.press_keycode('4')
         # self.driver.find_element_by_xpath('//*[@id="newusers-form"]/div[4]/label/span[1]/span').click()
         self.driver.find_element_by_xpath('//*[@id="newusers-form"]/button').click()
+

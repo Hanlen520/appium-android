@@ -6,16 +6,22 @@
 #######################################################
 
 import unittest
-from Mobile_Testsuite.PO import InitDriver
 from Mobile_Testsuite.PO import HomePage
+from Mobile_Testsuite.Untils.server import Server
+from Mobile_Testsuite.PO import InitDriver
 
 
 class DemoCase(unittest.TestCase):
     """Demo 测试用例 """
+    @classmethod
+    def setUpClass(cls):
+        server = Server()
+        server.main()
+
     def setUp(self):
         self.driver = InitDriver.start_driver()
         self.HomePage = HomePage.HomePage(self.driver)
-        self.driver.get('http://192.168.8.21:8989/home?c=ndydoe')
+        self.driver.get('http://192.168.8.21:8989/home')
 
     def tearDown(self):
         self.driver.quit()
@@ -30,6 +36,7 @@ class DemoCase(unittest.TestCase):
         """测试点：进入首页，取到首页标题并和预期结果比对"""
         title_text = self.HomePage.get_title_text()
         self.assertEqual(title_text, '首页')
+
 
 if __name__ == '__main__':
     unittest.main()

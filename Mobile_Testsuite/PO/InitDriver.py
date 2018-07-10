@@ -7,8 +7,6 @@
 
 from appium import webdriver
 import os
-import time
-import requests
 
 # 读取设备 id
 readDeviceId = list(os.popen('adb devices').readlines())
@@ -30,7 +28,7 @@ dis_browser['unicodeKeyboard'] = True
 dis_browser['resetKeyboard'] = True
 
 # Appium-server启动主机和端口
-server_url = 'http://localhost:4723/wd/hub'
+server_url = 'http://localhost:4700/wd/hub'
 
 # Appium启动session
 def start_driver():
@@ -38,12 +36,3 @@ def start_driver():
     driver = webdriver.Remote(server_url, dis_browser)
     return driver
 
-
-# 判断appium server是否已启动
-def is_running():
-    url = server_url + '/status'
-    response = requests.get(url)
-    if str(response.status_code).startswith("2"):
-        return True
-    else:
-        return False

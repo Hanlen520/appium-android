@@ -36,6 +36,9 @@ class FogotPwPage(Element):
     # 发送重置链接到邮箱按钮
     sendLink_btn_loc = (By.XPATH, '//*[@id="fotgot-form"]/button')
 
+    # 提交成功提示
+    correct_loc = (By.XPATH, '//*[@id="body_main"]/div/div[2]')
+
     # 底栏
     bottom_loc = (By.ID, 'footer')
 
@@ -94,11 +97,15 @@ class FogotPwPage(Element):
         code_address = self.find_element(*self.code_img_loc).get_attribute('src')
         return code_address
 
+    # 获取正确信息提交成功提示
+    def get_correct_text(self):
+        correct_text = self.find_element(*self.correct_loc).text
+        return correct_text
+
     # 判断发送重置链接到邮箱按钮是否禁用
     def send_link_btn_is_enable(self):
         true_or_false = self.find_element(*self.sendLink_btn_loc).is_enabled()
         return true_or_false
-
 
 
 
