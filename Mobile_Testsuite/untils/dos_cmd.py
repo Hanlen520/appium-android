@@ -1,5 +1,11 @@
+#######################################################
+# FileName:dos_cmd.py
+# Author:liketao
+# Date:2018-7-2
+# Function Description: windows上发送dos命令行方法
+#######################################################
 import os
-
+import subprocess
 
 class DosCmd:
     def excute_cmd_result(self, command):
